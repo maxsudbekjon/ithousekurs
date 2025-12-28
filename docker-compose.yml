@@ -37,8 +37,6 @@ services:
       - ./.env
     environment:
       - TZ=Asia/Tashkent
-    ports:
-      - "${WEB_PORT}:${WEB_PORT}"
     depends_on:
       - db
     healthcheck:
