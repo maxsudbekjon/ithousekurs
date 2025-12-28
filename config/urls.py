@@ -29,7 +29,7 @@ urlpatterns += i18n_patterns(
       path('users/', include('accounts.urls')),
       path('course/', include('courses.urls')),
       path('course_progres/', include('course_progress.urls')),
-      path('payments/', include('payment.urls')),   
+      # path('payments/', include('payment.urls')),   
     ]))
 )
 

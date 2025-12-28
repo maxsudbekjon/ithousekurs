@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     # internal apps
     'accounts',
     'courses',
-    'payment',
+    # 'payment',
     'course_progress',
 
 ]
