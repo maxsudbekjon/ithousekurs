@@ -1,10 +1,13 @@
+version: "3.9"
+
 services:
 
   web:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: Dockerfile
     container_name: ithouseonline_web
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
     security_opt:
       - seccomp:unconfined
     volumes:
@@ -16,13 +19,16 @@ services:
       - ./.env
     environment:
       - TZ=Asia/Tashkent
+    expose:
+      - "8000"
+    restart: always
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/health/ || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/ || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 15s
-  
+      start_period: 20s
+
   nginx:
     build:
       context: ./nginx
@@ -37,11 +43,13 @@ services:
       - ./staticfiles:/app/staticfiles
       - ./media:/app/media
     restart: always
-  
+
   redis:
     image: redis:7
+    container_name: ithouseonline_redis
     ports:
       - "6379:6379"
+    restart: always
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -51,7 +59,6 @@ services:
 
 
 volumes:
-  postgres_data:
   media:
   static:
   staticfiles:
