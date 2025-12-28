@@ -17,7 +17,7 @@ services:
     environment:
       - TZ=Asia/Tashkent
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:${WEB_PORT} || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/health/ || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
