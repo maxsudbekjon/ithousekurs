@@ -1,0 +1,56 @@
+from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+from django.contrib.auth import get_user_model
+from courses.models import CourseCategory, Course, Video, Section, VideoComment, Question, Test
+from courses.serializers import CourseCategorySerializer, CourseSerializer, VideoSerializer, \
+    SectionSerializer, VideoCommentSerializer, UserSerializer, QuestionSerializer
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
+User = get_user_model()
+
+
+class GetQuestionAPIView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    @swagger_auto_schema(
+        operation_description="get question.!",
+        manual_parameters=[
+            openapi.Parameter(
+                name='id',
+                in_=openapi.IN_PATH,
+                description="Get Question.!",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={
+            200: openapi.Response(
+                description="Question",
+                schema=QuestionSerializer
+            ),
+            404: "Question Not Found"
+        }
+    )
+    def get(self, request, pk):
+        test = get_object_or_404(Test, pk=pk)
+        question = Question.objects.filter(test=test)
+
+        if not question.exists():
+            return Response({"message": "question not found.!"}, status=404)
+
+        serializer = QuestionSerializer(question, many=True, context={'request': request})
+
+        return Response(serializer.data, status=200)
+
+
+class GetAllUserAPIView(APIView):
+    def get(self, request):
+        user = User.objects.all()
+        serializer = UserSerializer(user, many=True, context={'request': request})
+
+        return Response(serializer.data, status=200)
