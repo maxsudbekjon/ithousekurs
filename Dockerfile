@@ -41,7 +41,4 @@ COPY --from=builder /opt/venv /opt/venv
 # Copy project
 COPY . .
 
-# Copy and configure entrypoint
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
-ENTRYPOINT ["bash", "/app/entrypoint.sh"]
+
