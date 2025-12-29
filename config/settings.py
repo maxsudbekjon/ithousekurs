@@ -179,21 +179,19 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Eng sodda CORS: barcha domenlarga ruxsat
-CORS_ALLOW_ALL_ORIGINS = False
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "https://frontend.com",
-]
-USE_X_FORWARDED_HOST = True
-
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
-
-SECURE_SSL_REDIRECT = False
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-SWAGGER_SETTINGS = {
-    "DEFAULT_API_URL": "http://45.130.104.72:8014",
-}
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://45.130.104.72",
+    "http://45.130.104.72:8014",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
+SECURE_SSL_REDIRECT = False
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=3),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
@@ -237,14 +235,15 @@ SIMPLE_JWT = {
 }
 
 SWAGGER_SETTINGS = {
-    'USE_SESSION_AUTH': False,
-    'DEFAULT_API_KEY_PREFIX': 'Bearer',
-    'SECURITY_DEFINITIONS': {
-        'Bearer': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header',
-            'description': "JWT formatida yuboring: **Bearer &lt;your_token&gt;**",
+    "USE_SESSION_AUTH": False,
+    "DEFAULT_API_URL": "http://45.130.104.72:8014",
+    "DEFAULT_API_KEY_PREFIX": "Bearer",
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT formatida yuboring: **Bearer &lt;your_token&gt;**",
         }
     },
 }
