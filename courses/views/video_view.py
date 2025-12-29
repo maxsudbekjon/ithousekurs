@@ -77,31 +77,32 @@ class GetVideoAPIView(APIView):
     # permission_classes = [IsAuthenticated,]
 
     @swagger_auto_schema(
-        operation_description="get video",
+        operation_description="Get all videos in a section",
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
-                description="Video ID (Primary Key)",
+                description="Section ID (Primary Key)",
                 type=openapi.TYPE_INTEGER,
                 required=True,
             )
         ],
         responses={
             200: openapi.Response(
-                description="Successfully",
-                schema=VideoSerializer()
+                description="Videos in the section",
+                schema=VideoSerializer(many=True)
             ),
             404: openapi.Response(
-                description="Video Not Found.!"
+                description="Section videos not found.!"
             ),
         },
         tags=["Video"]
     )
     def get(self, request, pk):
-        try:
-            video = Video.objects.get(pk=pk)
-            serializer = VideoSerializer(video, context={'request': request})
-            return Response(serializer.data, status=200)
-        except Video.DoesNotExist:
-            return Response({"error": "Video Not Found.!"}, status=404)
+        videos = Video.objects.filter(section_id=pk)
+        if not videos.exists():
+            return Response({"error": "Video Not Found.!"},
+                            status=404)
+
+        serializer = VideoSerializer(videos, many=True, context={'request': request})
+        return Response(serializer.data, status=200)
