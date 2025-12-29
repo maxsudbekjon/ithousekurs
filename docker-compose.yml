@@ -15,9 +15,11 @@ services:
       - ./static:/app/static
       - ./staticfiles:/app/staticfiles
       - ./media:/app/media
+      
     env_file:
       - ./.env
     environment:
+    
       - TZ=Asia/Tashkent
     expose:
       - "8000"
