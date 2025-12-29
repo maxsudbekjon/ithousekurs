@@ -1,4 +1,6 @@
-from courses.models import Video
+from django.db.models import Q
+
+from courses.models import Video, Section
 from courses.serializers import VideoSerializer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -46,9 +48,9 @@ class AddVideoAPIView(APIView):
             openapi.Parameter(
                 name="section",
                 in_=openapi.IN_FORM,
-                type=openapi.TYPE_INTEGER,
+                type=openapi.TYPE_STRING,
                 required=True,
-                description="Qaysi section ga tegishli"
+                description="Video tegishli bo‘lgan section nomi (masalan: html)"
             ),
             openapi.Parameter(
                 name="duration",
@@ -66,7 +68,24 @@ class AddVideoAPIView(APIView):
         tags=["Video"]
     )
     def post(self, request):
-        serializer = VideoSerializer(data=request.data, context={'request': request})
+        section_name = request.data.get('section')
+        if not section_name:
+            return Response({"error": "section required"}, status=400)
+
+        section = Section.objects.filter(
+            Q(title_uz__iexact=section_name) |
+            Q(title_en__iexact=section_name) |
+            Q(title_ru__iexact=section_name)
+        ).first()
+
+        if not section:
+            return Response({"error": "Section Not Found.!"},
+                            status=404)
+
+        data = request.data.copy()
+        data['section'] = section.pk
+
+        serializer = VideoSerializer(data=data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=201)
