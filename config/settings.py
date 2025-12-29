@@ -191,20 +191,37 @@ MEDIA_ROOT = BASE_DIR / 'media'
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
 
-# Ushbu list keyinchalik cheklangan rejimga qaytishda ishlatish uchun qoldirildi
+# Frontend uchun ruxsat etilgan domenlar
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://45.130.104.72",
+    "https://45.130.104.72",
     "http://45.130.104.72:8014",
     "https://45.130.104.72:8014",
+]
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https?://45\\.130\\.104\\.72(:\\d+)?$",
+]
+
+CORS_ALLOW_HEADERS = [
+    "authorization",
+    "content-type",
+    "x-csrftoken",
+    "accept",
+    "accept-language",
+    "x-requested-with",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://45.130.104.72",
+    "https://45.130.104.72",
     "http://45.130.104.72:8014",
     "https://45.130.104.72:8014",
 ]
@@ -271,4 +288,3 @@ JAZZMIN_SETTINGS = {
     "site_brand": "It House",
     "welcome_sign": "It House Admin"
 }
-
