@@ -69,7 +69,7 @@ class GetSectionAPIView(APIView):
 
 
 class GetAllSectionAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
         operation_summary="Barcha sectionlarni olish",
