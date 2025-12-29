@@ -192,7 +192,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Eng sodda CORS: barcha domenlarga ruxsat
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "False") == "True"
 CORS_ALLOW_CREDENTIALS = True
 
 SIMPLE_JWT = {
