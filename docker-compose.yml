@@ -19,12 +19,13 @@ services:
     env_file:
       - ./.env
     environment:
-    
+
       - TZ=Asia/Tashkent
     expose:
       - "8000"
     restart: always
     healthcheck:
+    
       test: ["CMD-SHELL", "curl -fsS http://localhost:8000/ || exit 1"]
       interval: 10s
       timeout: 5s
