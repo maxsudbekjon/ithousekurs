@@ -45,7 +45,7 @@ services:
     restart: always
 
   redis:
-    image: redis:7
+    image: redis
     container_name: ithouseonline_redis
     ports:
       - "6379:6379"
