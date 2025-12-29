@@ -50,12 +50,14 @@ class CourseSerializer(serializers.ModelSerializer):
     finish = serializers.SerializerMethodField()
     users = serializers.SerializerMethodField()
     instructor = serializers.SerializerMethodField()
+    videos = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
         fields = ['id', 'users', 'rating', 'lessons', 'finish', 'category', 'name',
                   'name_uz', 'name_en', 'name_ru', 'description', 'description_uz',
-                  'description_en', 'description_ru', 'price', 'duration', 'discount', 'instructor', 'status']
+                  'description_en', 'description_ru', 'price', 'duration', 'discount', 'instructor', 'status',
+                  'videos']
 
     def get_users(self, obj):
         return CourseProgress.objects.filter(course=obj).count()
@@ -96,6 +98,10 @@ class CourseSerializer(serializers.ModelSerializer):
         return {
             "full_name": instructor.full_name,
         }
+
+    def get_videos(self, obj):
+        videos = Video.objects.filter(section__course=obj)
+        return VideoSerializer(videos, many=True, context=self.context).data
 
 
 class VideoSerializer(serializers.ModelSerializer):
