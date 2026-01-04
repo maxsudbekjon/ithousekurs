@@ -6,7 +6,7 @@ from rest_framework import generics, views
 from accounts.serializers import (CustomUserSerializer,
                                   RoleSerializer, TeacherSerializer,
                                   RegisterStep1Serializer, VerifySMSSerializer,
-                                  UserProfileSerializer
+                                  UserProfileSerializer, ProfileDashboardSerializer
                                   )
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -198,4 +198,13 @@ class UserProfileView(views.APIView):
         serializer = self.serializer_class(request.user, data=request.data, context={"request": request}, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserProfileDashboardView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = ProfileDashboardSerializer
+
+    def get(self, request):
+        serializer = self.serializer_class(request.user, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)

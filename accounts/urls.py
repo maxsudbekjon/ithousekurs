@@ -5,7 +5,8 @@ from rest_framework_simplejwt.views import (
 from rest_framework.routers import DefaultRouter
 from django.urls import path
 from accounts.views import (UserRegisterView, RoleViewSet, TeacherViewSet, UserProfileView,
-                            VerifySMSAPIView, GetSMSCodeView, CookieTokenObtainPairView
+                            VerifySMSAPIView, GetSMSCodeView, CookieTokenObtainPairView,
+                            UserProfileDashboardView
 )
 
 
@@ -20,6 +21,7 @@ urlpatterns = [
     path('verify-sms/', VerifySMSAPIView.as_view()),
     path('code/', GetSMSCodeView.as_view(), name='get_sms_code'),
     path('profile/', UserProfileView.as_view(), name='user_profile'),
+    path('profile/dashboard/', UserProfileDashboardView.as_view(), name='user_profile_dashboard'),
 ]
 
 urlpatterns += router.urls
