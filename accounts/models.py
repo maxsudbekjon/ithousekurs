@@ -14,57 +14,61 @@ class Role(models.Model):
         return self.name_eng
 
 
-class CustomUser(AbstractUser):
-    id = models.UUIDField(
-        unique=True,
-        primary_key=True,
-        default=uuid4,
-        editable=False,
-    )
-    username = None
+from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.core.validators import FileExtensionValidator
+from uuid import uuid4
+from accounts.manager import CustomUserManager
+
+
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    phone_number = models.CharField(max_length=15, unique=True, null=True, blank=True)
+
+    phone_number = models.CharField(max_length=15, unique=True)
     email = models.EmailField(unique=True, null=True, blank=True)
-    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True,
-                                        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
+
+    profile_picture = models.ImageField(
+        upload_to="profile_pictures/",
+        null=True,
+        blank=True,
+        validators=[FileExtensionValidator(["jpg", "jpeg", "png"])]
+    )
+
     rating = models.PositiveIntegerField(default=0)
-    password = models.CharField(max_length=128, null=True, blank=True)
     finished_courses = models.IntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='users', null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    role = models.ForeignKey(
+        "accounts.Role",
+        on_delete=models.CASCADE,
+        related_name="users",
+        null=True,
+        blank=True
+    )
 
     objects = CustomUserManager()
-    USERNAME_FIELD = 'phone_number'
+
+    USERNAME_FIELD = "phone_number"
     REQUIRED_FIELDS = []
 
     class Meta:
-        db_table = 'users'
-        verbose_name = 'CustomUser'
-        verbose_name_plural = 'CustomUsers'
-        ordering = ['-created_at']
-        unique_together = ('email', 'phone_number')
+        db_table = "users"
+        ordering = ["-created_at"]
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} ({self.role})"
-
-    def check_email(self):
-        if self.email:
-            normalize_email = self.email.lower().strip()
-            self.email = normalize_email
-
-    def chaged_hash_password(self):
-        if not self.password.startswith('pbkdf2_sha256'):
-            self.set_password(self.password)
-            self.save()
+        return self.full_name
 
     @property
     def full_name(self):
-        return self.first_name + ' ' + self.last_name
-    
+        return f"{self.first_name} {self.last_name}"
 
 class Teacher(CustomUser):
     specialization = models.CharField(max_length=100)

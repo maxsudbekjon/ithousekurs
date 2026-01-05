@@ -8,24 +8,18 @@ services:
       dockerfile: Dockerfile
     container_name: ithouseonline_web
     command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
-    security_opt:
-      - seccomp:unconfined
-    volumes:
-      - ./:/app
-      - ./static:/app/static
-      - ./staticfiles:/app/staticfiles
-      - ./media:/app/media
-      
     env_file:
       - ./.env
     environment:
-
       - TZ=Asia/Tashkent
+    volumes:
+      - ./:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
     expose:
       - "8000"
     restart: always
     healthcheck:
-    
       test: ["CMD-SHELL", "curl -fsS http://localhost:8000/ || exit 1"]
       interval: 10s
       timeout: 5s
@@ -42,16 +36,13 @@ services:
     ports:
       - "8014:80"
     volumes:
-      - ./static:/app/static
-      - ./staticfiles:/app/staticfiles
-      - ./media:/app/media
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
     restart: always
 
   redis:
     image: redis
     container_name: ithouseonline_redis
-    ports:
-      - "6379:6379"
     restart: always
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -60,8 +51,6 @@ services:
       retries: 5
       start_period: 5s
 
-
 volumes:
-  media:
-  static:
-  staticfiles:
+  static_volume:
+  media_volume:

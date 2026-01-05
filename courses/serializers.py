@@ -57,7 +57,7 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = ['id', 'users', 'rating', 'lessons', 'finish', 'category', 'name',
                   'name_uz', 'name_en', 'name_ru', 'description', 'description_uz',
                   'description_en', 'description_ru', 'price', 'duration', 'discount', 'instructor', 'status',
-                  'videos']
+                  'videos',"banner"]
 
     def get_users(self, obj):
         return CourseProgress.objects.filter(course=obj).count()

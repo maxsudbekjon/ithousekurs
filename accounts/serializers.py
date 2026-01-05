@@ -30,7 +30,7 @@ class TeacherSerializer(ModelSerializer):
         return user
     class Meta:
         model = Teacher
-        fields = ['username', 'first_name', 'last_name', 'email', 'phone_number', 'profile_picture', 'role', 'password', 'confirm_password', 'specialization', 'bio', 'students', 'experience']
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'profile_picture', 'role', 'password', 'confirm_password', 'specialization', 'bio', 'students', 'experience']
 
 
 class RegisterStep1Serializer(ModelSerializer):
