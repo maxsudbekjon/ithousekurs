@@ -468,3 +468,21 @@ class ProfileDashboardSerializer(serializers.Serializer):
                 "best": streak["best"],
             },
         }
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = [
+            "first_name",
+            "last_name",
+            "email",
+            "profile_picture",
+            "phone_number",
+            "location",
+        ]
+
+    def validate_email(self, value):
+        user = self.context["request"].user
+        if value and CustomUser.objects.exclude(id=user.id).filter(email=value).exists():
+            raise serializers.ValidationError("Bu email allaqachon mavjud")
+        return value

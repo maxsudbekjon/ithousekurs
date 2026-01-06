@@ -3,7 +3,7 @@ from accounts.models import CustomUser, Role, Notification, ActivityLog, Teacher
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework import generics, views
-from accounts.serializers import (CustomUserSerializer,
+from accounts.serializers import (CustomUserSerializer, ProfileUpdateSerializer,
                                   RoleSerializer, TeacherSerializer,
                                   RegisterStep1Serializer, VerifySMSSerializer,
                                   UserProfileSerializer, ProfileDashboardSerializer
@@ -208,3 +208,32 @@ class UserProfileDashboardView(views.APIView):
     def get(self, request):
         serializer = self.serializer_class(request.user, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+class UserProfileUpdateView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request):
+        serializer = ProfileUpdateSerializer(
+            request.user,
+            data=request.data,
+            partial=True,
+            context={"request": request},
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            {"message": "Profil muvaffaqiyatli yangilandi"},
+            status=status.HTTP_200_OK,
+        )
+
+    def put(self, request):
+        serializer = ProfileUpdateSerializer(
+            request.user,
+            data=request.data,
+            context={"request": request},
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            {"message": "Profil to‘liq yangilandi"},
+            status=status.HTTP_200_OK,
+        )

@@ -39,6 +39,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     rating = models.PositiveIntegerField(default=0)
     finished_courses = models.IntegerField(default=0)
+    location=models.CharField(max_length=255,null=True,blank=True)
 
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
