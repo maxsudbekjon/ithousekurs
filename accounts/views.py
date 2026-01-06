@@ -17,6 +17,10 @@ from django.core.cache import cache
 from django.contrib.auth.hashers import make_password
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from django.utils.decorators import method_decorator
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 class UserRegisterView(views.APIView):
@@ -209,15 +213,26 @@ class UserProfileDashboardView(views.APIView):
         serializer = self.serializer_class(request.user, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class UserProfileUpdateView(views.APIView):
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = ProfileUpdateSerializer
-    @swagger_auto_schema(
+@method_decorator(
+    name="patch",
+    decorator=swagger_auto_schema(
         request_body=ProfileUpdateSerializer,
         responses={200: openapi.Response("OK")},
         operation_summary="Profilni qisman yangilash",
-        operation_description="Foydalanuvchi o‘z profil maʼlumotlarini qisman yangilaydi",
-    )
+    ),
+)
+@method_decorator(
+    name="put",
+    decorator=swagger_auto_schema(
+        request_body=ProfileUpdateSerializer,
+        responses={200: openapi.Response("OK")},
+        operation_summary="Profilni to‘liq yangilash",
+    ),
+)
+class UserProfileUpdateView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = ProfileUpdateSerializer
+    parser_classes = [MultiPartParser, FormParser]
 
     def patch(self, request):
         serializer = ProfileUpdateSerializer(
