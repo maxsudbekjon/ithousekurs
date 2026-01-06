@@ -208,9 +208,16 @@ class UserProfileDashboardView(views.APIView):
     def get(self, request):
         serializer = self.serializer_class(request.user, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 class UserProfileUpdateView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ProfileUpdateSerializer
+    @swagger_auto_schema(
+        request_body=ProfileUpdateSerializer,
+        responses={200: openapi.Response("OK")},
+        operation_summary="Profilni qisman yangilash",
+        operation_description="Foydalanuvchi o‘z profil maʼlumotlarini qisman yangilaydi",
+    )
 
     def patch(self, request):
         serializer = ProfileUpdateSerializer(
