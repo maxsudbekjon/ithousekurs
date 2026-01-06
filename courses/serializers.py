@@ -43,6 +43,8 @@ class CourseCategorySerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    category_name = serializers.SerializerMethodField()
+
     name = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
     rating = serializers.SerializerMethodField()
@@ -54,11 +56,19 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'users', 'rating', 'lessons', 'finish', 'category', 'name',
+        fields = ['id', 'users', 'rating', 'lessons', 'finish', 'category_name', 'name',
                   'name_uz', 'name_en', 'name_ru', 'description', 'description_uz',
                   'description_en', 'description_ru', 'price', 'duration', 'discount', 'instructor', 'status',
                   'videos',"banner"]
+    def get_category_name(self, obj):
+        lang = self.context['request'].LANGUAGE_CODE
+        category = obj.category
 
+        if lang == 'ru':
+            return category.name_ru
+        elif lang == 'en':
+            return category.name_en
+        return category.name_uz
     def get_users(self, obj):
         return CourseProgress.objects.filter(course=obj).count()
 
