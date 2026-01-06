@@ -210,6 +210,7 @@ class UserProfileDashboardView(views.APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 class UserProfileUpdateView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = ProfileUpdateSerializer
 
     def patch(self, request):
         serializer = ProfileUpdateSerializer(
