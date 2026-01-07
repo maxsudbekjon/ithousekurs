@@ -119,7 +119,7 @@ class GetVideoAPIView(APIView):
         tags=["Video"]
     )
     def get(self, request, pk):
-        videos = Video.objects.filter(section_id=pk)
+        videos = Video.objects.filter(section=pk)
         if not videos.exists():
             return Response({"error": "Video Not Found.!"},
                             status=404)
