@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import FileExtensionValidator
 from uuid import uuid4
 from accounts.manager import CustomUserManager
-
+from django.utils import timezone
 
 class Role(models.Model):
     name_eng = models.CharField(max_length=50, unique=True)
@@ -36,7 +36,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         blank=True,
         validators=[FileExtensionValidator(["jpg", "jpeg", "png"])]
     )
-
+    date_joined = models.DateTimeField(default=timezone.now)
     rating = models.PositiveIntegerField(default=0)
     finished_courses = models.IntegerField(default=0)
     location=models.CharField(max_length=255,null=True,blank=True)
