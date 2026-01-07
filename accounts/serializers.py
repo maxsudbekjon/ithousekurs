@@ -251,6 +251,7 @@ class ProfileDashboardSerializer(serializers.Serializer):
             "last_name": obj.last_name,
             "phone_number": obj.phone_number,
             "email": obj.email,
+            "location": obj.location,
             "avatar": avatar_url,
             "member_since": obj.created_at.date() if obj.created_at else None,
             "role": obj.role.name_uz if obj.role else None,
