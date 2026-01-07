@@ -111,7 +111,7 @@ class CourseSerializer(serializers.ModelSerializer):
         }
 
     def get_videos(self, obj):
-        videos = Video.objects.filter(section__course=obj)
+        videos = Video.objects.filter(section__course=obj,is_preview=True)
         request = self.context.get('request')
         access_map = build_video_access_map(request.user, obj) if request else None
         return VideoSerializer(
