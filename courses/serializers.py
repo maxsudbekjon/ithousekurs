@@ -3,6 +3,7 @@ from .models import CourseCategory, Course, Video, Section, VideoComment, \
     Question, Test, Answer, ContactUsMessage
 from django.contrib.auth import get_user_model
 from course_progress.models import CourseRating, CourseProgress
+from courses.utils import build_video_access_map
 from django.db.models import Avg
 from decimal import Decimal
 
@@ -111,15 +112,24 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def get_videos(self, obj):
         videos = Video.objects.filter(section__course=obj)
-        return VideoSerializer(videos, many=True, context=self.context).data
+        request = self.context.get('request')
+        access_map = build_video_access_map(request.user, obj) if request else None
+        return VideoSerializer(
+            videos,
+            many=True,
+            context={'request': request, 'access_map': access_map}
+        ).data
 
 
 class VideoSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
+    is_locked = serializers.SerializerMethodField()
+    test_id = serializers.SerializerMethodField()
 
     class Meta:
         model = Video
-        fields = ["id", 'section', 'title', 'title_uz', 'title_en', 'title_ru', "video_file", 'duration']
+        fields = ["id", 'section', 'title', 'title_uz', 'title_en', 'title_ru', "video_file", 'duration',
+                  'is_preview', 'is_locked', 'test_id']
 
     def get_title(self, obj):
         lang = self.context['request'].LANGUAGE_CODE
@@ -128,6 +138,23 @@ class VideoSerializer(serializers.ModelSerializer):
         elif lang == 'en':
             return obj.title_en
         return obj.title_uz
+
+    def get_is_locked(self, obj):
+        access_map = self.context.get("access_map")
+        if access_map is None:
+            return False
+        return not access_map.get(obj.id, False)
+
+    def get_test_id(self, obj):
+        if hasattr(obj, "test") and obj.test:
+            return obj.test.id
+        return None
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if data.get("is_locked"):
+            data["video_file"] = None
+        return data
 
 
 class SectionSerializer(serializers.ModelSerializer):

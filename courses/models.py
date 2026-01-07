@@ -67,6 +67,7 @@ class Video(BasicClass):
     title_ru = models.CharField(max_length=255)
     video_file = models.FileField(upload_to='videos/')
     duration = models.CharField(max_length=15)
+    is_preview = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title_uz
@@ -91,6 +92,7 @@ class Test(BasicClass):
     description_uz = models.TextField()
     description_ru = models.TextField()
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
+    video = models.OneToOneField(Video, on_delete=models.CASCADE, related_name='test', null=True, blank=True)
 
     def __str__(self):
         return self.title_en

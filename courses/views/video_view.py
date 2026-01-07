@@ -2,6 +2,7 @@ from django.db.models import Q
 
 from courses.models import Video, Section
 from courses.serializers import VideoSerializer
+from courses.utils import build_video_access_map
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
 from drf_yasg.utils import swagger_auto_schema
@@ -123,5 +124,12 @@ class GetVideoAPIView(APIView):
             return Response({"error": "Video Not Found.!"},
                             status=404)
 
-        serializer = VideoSerializer(videos, many=True, context={'request': request})
+        section = videos.first().section
+        course = section.course
+        access_map = build_video_access_map(request.user, course)
+        serializer = VideoSerializer(
+            videos,
+            many=True,
+            context={'request': request, 'access_map': access_map}
+        )
         return Response(serializer.data, status=200)
