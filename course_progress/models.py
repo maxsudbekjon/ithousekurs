@@ -1,5 +1,5 @@
 from django.db import models
-from courses.models import BasicClass, Test, Course, Video
+from courses.models import BasicClass, Course, Video, Question, Answer
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
@@ -19,8 +19,7 @@ class CourseRating(BasicClass):
 class CourseProgress(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='course_progress_user')
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    video_progress = models.ForeignKey(Video, on_delete=models.CASCADE)
-    test_progress = models.ForeignKey(Test, on_delete=models.CASCADE)
+    video_progress = models.ForeignKey(Video, on_delete=models.CASCADE, null=True, blank=True)
     is_complete = models.BooleanField(default=False)
     completed = models.DateTimeField(null=True, blank=True)
 
@@ -62,15 +61,18 @@ class ExamResult(BasicClass):
         return f"exam: {self.exam} --> result: {self.result}"
     
 
-class TestResult(BasicClass):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='test_result_user')
-    test = models.ForeignKey(Test, on_delete=models.CASCADE)
-    score = models.DecimalField(max_digits=10, decimal_places=2)
+class QuestionResult(BasicClass):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='question_result_user')
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    selected_answer = models.ForeignKey(Answer, on_delete=models.SET_NULL, null=True, blank=True)
     is_passed = models.BooleanField(default=False)
     completed_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('user', 'question')
+
     def __str__(self):
-        return f"user: {self.user} --> test: {self.test} --> score: {self.score}"
+        return f"user: {self.user} --> question: {self.question} --> passed: {self.is_passed}"
 
 class Certificate(BasicClass):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='certificate_user')

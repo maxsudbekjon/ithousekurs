@@ -4,7 +4,7 @@ from .views.course_view import *
 from .views.section_view import *
 from .views.video_comment_view import *
 from .views.question_view import GetQuestionAPIView, GetAllUserAPIView
-from .views.test_view import AddTestAPIView, AddAnswerAPIView
+from .views.test_view import AddAnswerAPIView
 from .views.contact_views import ContactUsAPIView
 
 urlpatterns = [
@@ -22,11 +22,9 @@ urlpatterns = [
     path('reply_video_comment/<int:pk>/', ReplyCommentToVideoCommentAPIView.as_view(), ),
     path('like_comment/<int:pk>/', LikeVideoCommentAPIView.as_view(), ),
     path('get_question/<int:pk>/', GetQuestionAPIView.as_view(), ),
-    path('add_test/', AddTestAPIView.as_view(), ),
     path('add_answer/', AddAnswerAPIView.as_view(), ),
     path('get_all_section/', GetAllSectionAPIView.as_view(), ),
     path('get_all_users/', GetAllUserAPIView.as_view(), ),
     path('contact/', ContactUsAPIView.as_view(), ),
 ]
-
 

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import CourseCategory, Course, Video, Section, VideoComment, \
-    Question, Test, Answer, ContactUsMessage
+    Question, Answer, ContactUsMessage
 from django.contrib.auth import get_user_model
 from course_progress.models import CourseRating, CourseProgress
 from courses.utils import build_video_access_map
@@ -124,12 +124,12 @@ class CourseSerializer(serializers.ModelSerializer):
 class VideoSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     is_locked = serializers.SerializerMethodField()
-    test_id = serializers.SerializerMethodField()
+    has_questions = serializers.SerializerMethodField()
 
     class Meta:
         model = Video
         fields = ["id", 'section', 'title', 'title_uz', 'title_en', 'title_ru', "video_file", 'duration',
-                  'is_preview', 'is_locked', 'test_id']
+                  'is_preview', 'is_locked', 'has_questions']
 
     def get_title(self, obj):
         lang = self.context['request'].LANGUAGE_CODE
@@ -145,10 +145,8 @@ class VideoSerializer(serializers.ModelSerializer):
             return False
         return not access_map.get(obj.id, False)
 
-    def get_test_id(self, obj):
-        if hasattr(obj, "test") and obj.test:
-            return obj.test.id
-        return None
+    def get_has_questions(self, obj):
+        return Question.objects.filter(video=obj).exists()
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -186,34 +184,8 @@ class VideoCommentSerializer(serializers.ModelSerializer):
         read_only_fields = ['likes', 'video', 'user']
 
 
-class TestSerializer(serializers.ModelSerializer):
-    title = serializers.SerializerMethodField()
-    description = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Test
-        fields = '__all__'
-
-    def get_title(self, obj):
-        lang = self.context['request'].LANGUAGE_CODE
-        if lang == 'ru':
-            return obj.title_ru
-        elif lang == 'en':
-            return obj.title_en
-        return obj.title_uz
-
-    def get_description(self, obj):
-        lang = self.context['request'].LANGUAGE_CODE
-        if lang == 'ru':
-            return obj.description_ru
-        elif lang == 'en':
-            return obj.description_en
-        return obj.description_uz
-
-
 class QuestionSerializer(serializers.ModelSerializer):
     questtion_text = serializers.SerializerMethodField()
-    test = TestSerializer(read_only=True)
 
     class Meta:
         model = Question

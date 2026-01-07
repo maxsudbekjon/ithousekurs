@@ -23,7 +23,7 @@ class GetCourseProgresAPIView(APIView):
             )
         ],
         responses={
-            200: openapi.Response("Test natijasi topildi", CourseProgressSerializer),
+            200: openapi.Response("Course progress topildi", CourseProgressSerializer),
             401: "Avtorizatsiya xatosi",
             404: "Topilmadi"
         }
@@ -46,7 +46,7 @@ class AddCourseProgressAPIView(APIView):
         operation_description="add course progress.",
         request_body=CourseProgressSerializer,
         responses={
-            201: openapi.Response("Test natijasi muvaffaqiyatli qo‘shildi", CourseProgressSerializer),
+            201: openapi.Response("Course progress muvaffaqiyatli qo‘shildi", CourseProgressSerializer),
             400: "Yaroqsiz ma’lumot yuborildi",
             401: "Avtorizatsiya xatosi"
         }

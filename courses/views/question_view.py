@@ -3,11 +3,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from django.contrib.auth import get_user_model
-from courses.models import CourseCategory, Course, Video, Section, VideoComment, Question, Test
-from courses.serializers import CourseCategorySerializer, CourseSerializer, VideoSerializer, \
-    SectionSerializer, VideoCommentSerializer, UserSerializer, QuestionSerializer
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
-
+from courses.models import Video, Question
+from courses.serializers import UserSerializer, QuestionSerializer
+from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -23,7 +21,7 @@ class GetQuestionAPIView(APIView):
             openapi.Parameter(
                 name='id',
                 in_=openapi.IN_PATH,
-                description="Get Question.!",
+                description="Video ID orqali savollarni olish",
                 type=openapi.TYPE_INTEGER,
                 required=True
             )
@@ -37,8 +35,8 @@ class GetQuestionAPIView(APIView):
         }
     )
     def get(self, request, pk):
-        test = get_object_or_404(Test, pk=pk)
-        question = Question.objects.filter(test=test)
+        video = get_object_or_404(Video, pk=pk)
+        question = Question.objects.filter(video=video)
 
         if not question.exists():
             return Response({"message": "question not found.!"}, status=404)

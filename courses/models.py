@@ -84,28 +84,14 @@ class VideoComment(BasicClass):
         return self.text
 
 
-class Test(BasicClass):
-    title_en = models.CharField(max_length=255)
-    title_uz = models.CharField(max_length=255)
-    title_ru = models.CharField(max_length=255)
-    description_en = models.TextField()
-    description_uz = models.TextField()
-    description_ru = models.TextField()
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    video = models.OneToOneField(Video, on_delete=models.CASCADE, related_name='test', null=True, blank=True)
-
-    def __str__(self):
-        return self.title_en
-
-
 class Question(BasicClass):
-    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
     question_text_en = models.TextField()
     question_text_uz = models.TextField()
     question_text_ru = models.TextField()
 
     def __str__(self):
-        return f"test: {self.test} --- question_text: {self.question_text_en}"
+        return f"video: {self.video} --- question_text: {self.question_text_en}"
 
 
 class Answer(BasicClass):
