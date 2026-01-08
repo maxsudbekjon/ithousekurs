@@ -15,6 +15,7 @@ urlpatterns = [
     path('get_course/<int:pk>/', GetCourseAPIView.as_view(), ),
     path('add_video/', AddVideoAPIView.as_view(), ),
     path('get_video/<int:pk>/', GetVideoAPIView.as_view(), ),
+    path('get_video_url/<int:pk>/', GetVideoUrlAPIView.as_view(), ),
     path('add_section/', AddSectionAPIView.as_view(), ),
     path('get_section/<int:pk>/', GetSectionAPIView.as_view(), ),
     path('add_video_comment/<int:pk>/', AddVideoCommentAPIView.as_view(), ),
@@ -27,4 +28,3 @@ urlpatterns = [
     path('get_all_users/', GetAllUserAPIView.as_view(), ),
     path('contact/', ContactUsAPIView.as_view(), ),
 ]
-

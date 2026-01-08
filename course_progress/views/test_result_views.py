@@ -56,6 +56,7 @@ class AddQuestionResultAPIView(APIView):
                     },
                     status=200
                 )
+            Question.objects.filter(id=question.id).update(is_completed=True)
             section = question.video.section
             if _is_section_completed(request.user, section):
                 SectionCompletion.objects.get_or_create(
@@ -127,5 +128,4 @@ def _is_video_completed(user, video):
         question__video=video
     ).count()
     return passed_questions >= total_questions
-
 

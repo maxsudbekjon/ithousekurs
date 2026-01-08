@@ -89,6 +89,7 @@ class Question(BasicClass):
     question_text_en = models.TextField()
     question_text_uz = models.TextField()
     question_text_ru = models.TextField()
+    is_completed = models.BooleanField(default=False)
 
     def __str__(self):
         return f"video: {self.video} --- question_text: {self.question_text_en}"

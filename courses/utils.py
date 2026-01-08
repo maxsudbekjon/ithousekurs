@@ -74,3 +74,10 @@ def build_video_access_map(user, course):
         prev_video = course_videos[index - 1]
         access_map[video.id] = is_video_completed(prev_video.id)
     return access_map
+
+
+def is_video_test_completed(video):
+    questions = Question.objects.filter(video=video)
+    if not questions.exists():
+        return True
+    return not questions.filter(is_completed=False).exists()

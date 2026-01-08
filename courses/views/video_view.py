@@ -1,8 +1,9 @@
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
-from courses.models import Video, Section
-from courses.serializers import VideoSerializer
-from courses.utils import build_video_access_map
+from courses.models import Video, Section, Question
+from courses.serializers import VideoSerializer, QuestionSerializer
+from courses.utils import build_video_access_map, is_video_test_completed
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
 from drf_yasg.utils import swagger_auto_schema
@@ -133,3 +134,72 @@ class GetVideoAPIView(APIView):
             context={'request': request, 'access_map': access_map}
         )
         return Response(serializer.data, status=200)
+
+
+class GetVideoUrlAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Get video url by video id with previous test check",
+        manual_parameters=[
+            openapi.Parameter(
+                name="id",
+                in_=openapi.IN_PATH,
+                description="Video ID (Primary Key)",
+                type=openapi.TYPE_INTEGER,
+                required=True,
+            )
+        ],
+        responses={
+            200: openapi.Response(
+                description="Video url or previous video test",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "video_id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                        "video_url": openapi.Schema(type=openapi.TYPE_STRING),
+                        "questions": openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_OBJECT)),
+                    }
+                )
+            ),
+            404: openapi.Response(description="Video not found"),
+        },
+        tags=["Video"]
+    )
+    def get(self, request, pk):
+        video = get_object_or_404(Video, pk=pk)
+        course_videos = list(
+            Video.objects.filter(section__course=video.section.course)
+            .order_by('created_at', 'id')
+        )
+        try:
+            current_index = next(
+                index for index, item in enumerate(course_videos) if item.id == video.id
+            )
+        except StopIteration:
+            return Response({"error": "Video Not Found.!"},
+                            status=404)
+
+        if current_index > 0:
+            prev_video = course_videos[current_index - 1]
+            if not is_video_test_completed(prev_video):
+                questions = Question.objects.filter(video=prev_video)
+                serializer = QuestionSerializer(questions, many=True, context={'request': request})
+                return Response(
+                    {
+                        "detail": "Previous video test not completed.",
+                        "questions": serializer.data
+                    },
+                    status=200
+                )
+
+        video_url = None
+        if video.video_file:
+            video_url = request.build_absolute_uri(video.video_file.url)
+        return Response(
+            {
+                "video_id": video.id,
+                "video_url": video_url
+            },
+            status=200
+        )
