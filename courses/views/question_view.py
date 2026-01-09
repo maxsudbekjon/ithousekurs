@@ -54,8 +54,12 @@ class GetAllUserAPIView(APIView):
         return Response(serializer.data, status=200)
 
 class CheckAnswerAPIView(APIView):
-    def get(self,request,id):
+    def get(self, request, id):
         answer = get_object_or_404(Answer, id=id)
         if answer.is_correct:
-            return Response({"message":"true"},status=200)
-        return Response({"message":"false"},status=400)
+            question = answer.question
+            if not question.is_completed:
+                question.is_completed = True
+                question.save(update_fields=["is_completed"])
+            return Response({"message": "true"}, status=200)
+        return Response({"message": "false"}, status=400)
