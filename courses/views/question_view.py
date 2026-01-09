@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from django.contrib.auth import get_user_model
-from courses.models import Video, Question
+from courses.models import Answer, Video, Question
 from courses.serializers import UserSerializer, QuestionSerializer
 from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
@@ -52,3 +52,10 @@ class GetAllUserAPIView(APIView):
         serializer = UserSerializer(user, many=True, context={'request': request})
 
         return Response(serializer.data, status=200)
+
+class CheckAnswerAPIView(APIView):
+    def get(self,request,id):
+        answer=Answer.objects.filter(id=id)
+        if answer.is_correct:
+            return Response({"message":"CORRECT"},status=200)
+        return Response({"message":"NOT CORRECT"},status=400)

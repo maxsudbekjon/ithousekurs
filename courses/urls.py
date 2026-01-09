@@ -3,7 +3,7 @@ from .views.video_view import *
 from .views.course_view import *
 from .views.section_view import *
 from .views.video_comment_view import *
-from .views.question_view import GetQuestionAPIView, GetAllUserAPIView
+from .views.question_view import CheckAnswerAPIView, GetQuestionAPIView, GetAllUserAPIView
 from .views.test_view import AddAnswerAPIView
 from .views.contact_views import ContactUsAPIView
 
@@ -27,4 +27,5 @@ urlpatterns = [
     path('get_all_section/', GetAllSectionAPIView.as_view(), ),
     path('get_all_users/', GetAllUserAPIView.as_view(), ),
     path('contact/', ContactUsAPIView.as_view(), ),
+    path("check-answer",CheckAnswerAPIView.as_view())
 ]
