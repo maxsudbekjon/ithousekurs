@@ -106,7 +106,7 @@ class Answer(BasicClass):
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'question: {self.question} --- answer: {self.answer_text}'
+        return f'question: {self.question} --- answer: {self.answer_text_uz}'
     
 
 class SectionCompletion(models.Model):
