@@ -129,7 +129,7 @@ class VideoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Video
-        fields = ["id", 'section', 'title', 'title_uz', 'title_en', 'title_ru', "video_file", 'duration',
+        fields = ["id", 'section', 'title', 'title_uz', 'title_en', 'title_ru', 'discraption_uz', 'discraption_en', 'discraption_ru', "video_file", 'duration',
                   'is_preview', 'is_locked', 'has_questions']
 
     def get_title(self, obj):
