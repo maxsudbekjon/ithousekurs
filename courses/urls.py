@@ -27,5 +27,5 @@ urlpatterns = [
     path('get_all_section/', GetAllSectionAPIView.as_view(), ),
     path('get_all_users/', GetAllUserAPIView.as_view(), ),
     path('contact/', ContactUsAPIView.as_view(), ),
-    path("check-answer",CheckAnswerAPIView.as_view())
+    path("check-answer/<int:id>",CheckAnswerAPIView.as_view())
 ]
