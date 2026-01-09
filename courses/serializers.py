@@ -183,23 +183,6 @@ class VideoCommentSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'text', 'video', 'parent_comment', 'likes']
         read_only_fields = ['likes', 'video', 'user']
 
-
-class QuestionSerializer(serializers.ModelSerializer):
-    questtion_text = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Question
-        fields = '__all__'
-
-    def get_questtion_text(self, obj):
-        lang = self.context['request'].LANGUAGE_CODE
-        if lang == 'ru':
-            return obj.question_text_ru
-        elif lang == 'en':
-            return obj.question_text_en
-        return obj.question_text_uz
-
-
 class AnswerSerializer(serializers.ModelSerializer):
     answer_text = serializers.SerializerMethodField()
 
@@ -214,6 +197,33 @@ class AnswerSerializer(serializers.ModelSerializer):
         elif lang == 'en':
             return obj.answer_text_en
         return obj.answer_text_uz
+    
+class QuestionSerializer(serializers.ModelSerializer):
+    questtion_text = serializers.SerializerMethodField()
+    answers = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Question
+        fields = '__all__'
+
+    def get_questtion_text(self, obj):
+        lang = self.context['request'].LANGUAGE_CODE
+        if lang == 'ru':
+            return obj.question_text_ru
+        elif lang == 'en':
+            return obj.question_text_en
+        return obj.question_text_uz
+    def get_answers(self, obj):
+        answers = obj.answer_set.all()
+        serializer = AnswerSerializer(
+            answers,
+            many=True,
+            context=self.context
+        )
+        return serializer.data
+
+
+
     
 
 class ContactUsMessageSerializer(serializers.ModelSerializer):
