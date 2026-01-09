@@ -55,7 +55,7 @@ class GetAllUserAPIView(APIView):
 
 class CheckAnswerAPIView(APIView):
     def get(self,request,id):
-        answer=Answer.objects.filter(id=id)
+        answer = get_object_or_404(Answer, id=id)
         if answer.is_correct:
-            return Response({"message":"CORRECT"},status=200)
-        return Response({"message":"NOT CORRECT"},status=400)
+            return Response({"message":"true"},status=200)
+        return Response({"message":"false"},status=400)
