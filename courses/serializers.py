@@ -58,7 +58,7 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ['id', 'users', 'rating', 'lessons', 'finish', 'category_name', 'name',
-                  'name_uz', 'name_en', 'name_ru', 'description', 'description_uz',
+                  'name_uz', 'name_en', 'name_ru','description', 'description_uz',
                   'description_en', 'description_ru', 'price', 'duration', 'discount', 'instructor', 'status',
                   'videos',"banner"]
     def get_category_name(self, obj):
@@ -107,6 +107,7 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_instructor(self, obj):
         instructor = obj.instructor
         return {
+            "id":instructor.id,
             "full_name": instructor.full_name,
         }
 
