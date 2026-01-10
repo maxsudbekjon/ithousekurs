@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 
+from validators import validate_desktop_banner, validate_mobile_banner
+
 
 class BasicClass(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -37,7 +39,19 @@ class Course(BasicClass):
     description_uz = models.TextField()
     description_ru = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    banner = models.ImageField(upload_to="course_banners/")
+    banner_desktop = models.ImageField(
+        upload_to="course_banners/",
+        null=True,
+        blank=True,
+        validators=[validate_desktop_banner]
+    )
+
+    banner_mobile = models.ImageField(
+        upload_to="course_banners/",
+        null=True,
+        blank=True,
+        validators=[validate_mobile_banner]
+    )
     discount = models.CharField(max_length=255, null=True, blank=True)
     duration = models.CharField(max_length=15)
     category = models.ForeignKey(CourseCategory, on_delete=models.CASCADE)
