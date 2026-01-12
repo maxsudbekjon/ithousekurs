@@ -76,8 +76,16 @@ def build_video_access_map(user, course):
     return access_map
 
 
-def is_video_test_completed(video):
+def is_video_test_completed(video, user):
     questions = Question.objects.filter(video=video)
     if not questions.exists():
         return True
-    return not questions.filter(is_completed=False).exists()
+    if not user or not user.is_authenticated:
+        return False
+    total = questions.count()
+    passed = QuestionResult.objects.filter(
+        user=user,
+        is_passed=True,
+        question__video=video
+    ).count()
+    return passed >= total

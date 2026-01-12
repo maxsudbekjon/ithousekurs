@@ -182,7 +182,7 @@ class GetVideoUrlAPIView(APIView):
 
         if current_index > 0:
             prev_video = course_videos[current_index - 1]
-            if not is_video_test_completed(prev_video):
+            if not is_video_test_completed(prev_video, request.user):
                 questions = Question.objects.filter(video=prev_video)
                 serializer = QuestionSerializer(questions, many=True, context={'request': request})
                 return Response(
