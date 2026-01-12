@@ -39,6 +39,12 @@ class Course(BasicClass):
     description_uz = models.TextField()
     description_ru = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    banner=models.ImageField(
+        upload_to="course_banners/",
+        null=True,
+        blank=True,
+        default=""
+    )
     banner_desktop = models.ImageField(
         upload_to="course_banners/",
         null=True,
