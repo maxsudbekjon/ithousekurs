@@ -22,7 +22,7 @@ def validate_mobile_banner(image):
     )
 
 
-def _validate_image(image, required_width, required_height, aspect_ratio, field_name):
+def _validate_image(image, required_width, required_height, field_name):
     # 1️⃣ Fayl hajmi (MB)
     if image.size > MAX_IMAGE_SIZE_MB * 1024 * 1024:
         raise ValidationError(
@@ -50,11 +50,3 @@ def _validate_image(image, required_width, required_height, aspect_ratio, field_
             f"{field_name}: rasm aniq {required_width}x{required_height} bo‘lishi kerak."
         )
 
-    # 5️⃣ Nisbat (ratio) tekshiruvi (extra himoya)
-    expected_ratio = aspect_ratio[0] / aspect_ratio[1]
-    actual_ratio = img.width / img.height
-
-    if abs(actual_ratio - expected_ratio) > 0.01:
-        raise ValidationError(
-            f"{field_name}: rasm nisbatı {aspect_ratio[0]}:{aspect_ratio[1]} bo‘lishi kerak."
-        )
