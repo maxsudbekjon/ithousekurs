@@ -21,10 +21,11 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+   
 ]
 
 urlpatterns += i18n_patterns(
+    path('admin/', admin.site.urls),
     path('api/', include([
       path('users/', include('accounts.urls')),
       path('course/', include('courses.urls')),
