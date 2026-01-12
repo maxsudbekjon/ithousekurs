@@ -9,7 +9,6 @@ def validate_desktop_banner(image):
         image=image,
         required_width=1200,
         required_height=400,
-        aspect_ratio=(16, 9),
         field_name="Desktop banner"
     )
 
@@ -19,7 +18,6 @@ def validate_mobile_banner(image):
         image=image,
         required_width=360,
         required_height=120,
-        aspect_ratio=(3, 1),
         field_name="Mobile banner"
     )
 
