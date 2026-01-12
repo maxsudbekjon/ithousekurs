@@ -60,7 +60,7 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = ['id', 'users', 'rating', 'lessons', 'finish', 'category_name', 'name',
                   'name_uz', 'name_en', 'name_ru','description', 'description_uz',
                   'description_en', 'description_ru', 'price', 'duration', 'discount', 'instructor', 'status',
-                  'videos',"banner_desktop","banner_mobile"]
+                  'videos',"banner_desktop","banner_mobile","banner"]
     def get_category_name(self, obj):
         lang = self.context['request'].LANGUAGE_CODE
         category = obj.category
