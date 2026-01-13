@@ -1,7 +1,7 @@
 from accounts.models import Enrollment
 from course_progress.models import QuestionResult
 from courses.models import ContactUsMessage, Video, Question
-from django.db.models import Count
+from django.db.models import Count, Q
 import requests
 from django.conf import settings
 
@@ -50,14 +50,15 @@ def build_video_access_map(user, course):
         .values("video_id")
         .annotate(count=Count("id"))
     }
-    passed_counts = {
-        row["question__video_id"]: row["count"]
-        for row in QuestionResult.objects.filter(
-            user=user,
-            is_passed=True,
-            question__video_id__in=video_ids
-        ).values("question__video_id")
-        .annotate(count=Count("id"))
+    completed_counts = {
+        row["video_id"]: row["count"]
+        for row in Question.objects.filter(video_id__in=video_ids)
+        .filter(
+            Q(is_completed=True) |
+            Q(questionresult__user=user, questionresult__is_passed=True)
+        )
+        .values("video_id")
+        .annotate(count=Count("id", distinct=True))
     }
 
     access_map = {}
@@ -65,7 +66,7 @@ def build_video_access_map(user, course):
         total = question_counts.get(video_id, 0)
         if total == 0:
             return True
-        return passed_counts.get(video_id, 0) >= total
+        return completed_counts.get(video_id, 0) >= total
 
     for index, video in enumerate(course_videos):
         if video.is_preview or index == 0:
@@ -83,9 +84,8 @@ def is_video_test_completed(video, user):
     if not user or not user.is_authenticated:
         return False
     total = questions.count()
-    passed = QuestionResult.objects.filter(
-        user=user,
-        is_passed=True,
-        question__video=video
-    ).count()
-    return passed >= total
+    completed = questions.filter(
+        Q(is_completed=True) |
+        Q(questionresult__user=user, questionresult__is_passed=True)
+    ).distinct().count()
+    return completed >= total

@@ -169,7 +169,7 @@ class GetVideoUrlAPIView(APIView):
     def get(self, request, pk):
         video = get_object_or_404(Video, pk=pk)
         course_videos = list(
-            Video.objects.filter(section=video.section)
+            Video.objects.filter(section__course=video.section.course)
             .order_by('created_at', 'id')
         )
         try:
