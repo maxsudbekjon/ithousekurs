@@ -63,7 +63,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-if DEBUG is False:
+if not DEBUG:
     index = INSTALLED_APPS.index("django.contrib.staticfiles")
     INSTALLED_APPS.insert(index, "whitenoise.runserver_nostatic")
     MIDDLEWARE.insert(3, "whitenoise.middleware.WhiteNoiseMiddleware")
@@ -180,7 +180,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-if DEBUG is False:
+if not DEBUG:
     STORAGES = {
         "staticfiles": {
             "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
