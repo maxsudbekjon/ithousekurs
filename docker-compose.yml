@@ -25,15 +25,14 @@ services:
 
   redis:
     image: redis
-    container_name: ithouseonline_redis
+    container_name: ithousecourse_redis
     restart: unless-stopped
 
   web:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ithouseonline_web
-    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
+    container_name: ithousecourse_web
     env_file:
       - ./.env
     environment:
@@ -41,18 +40,12 @@ services:
       - TZ=Asia/Tashkent
     volumes:
       - ./:/app
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
+      - static:/app/staticfiles
+      - media:/app/media
     ports:
       - "${PORT}:${PORT}"
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/ || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
 
 volumes:
-  static_volume:
-  media_volume:
+  static:
+  media:
