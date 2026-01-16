@@ -36,7 +36,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         blank=True,
         validators=[FileExtensionValidator(["jpg", "jpeg", "png"])]
     )
-    date_joined = models.DateTimeField(default=timezone.now)
     rating = models.PositiveIntegerField(default=0)
     finished_courses = models.IntegerField(default=0)
     location=models.CharField(max_length=255,null=True,blank=True)
@@ -44,6 +43,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
+    date_joined = models.DateTimeField(default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -70,6 +70,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
+
 
 class Teacher(CustomUser):
     specialization = models.CharField(max_length=100)
