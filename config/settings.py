@@ -63,6 +63,11 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+if DEBUG is False:
+    index = INSTALLED_APPS.index("django.contrib.staticfiles")
+    INSTALLED_APPS.insert(index, "whitenoise.runserver_nostatic")
+    MIDDLEWARE.insert(3, "whitenoise.middleware.WhiteNoiseMiddleware")
+
 # =========================
 # CORS
 # =========================
@@ -95,7 +100,7 @@ CSRF_TRUSTED_ORIGINS = os.getenv(
 USE_X_FORWARDED_HOST = True
 USE_X_FORWARDED_PORT = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SECURE_SSL_REDIRECT = False
+# SECURE_SSL_REDIRECT = False
 
 # =========================
 # URLS / TEMPLATES
@@ -124,8 +129,12 @@ WSGI_APPLICATION = "config.wsgi.application"
 # =========================
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
 
@@ -170,6 +179,18 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+if DEBUG is False:
+    STORAGES = {
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+        },
+        'default': {
+            'BACKEND': 'django.core.files.storage.FileSystemStorage',
+            'LOCATION': os.path.join(BASE_DIR, 'media'),
+        }
+    }
+
 
 # =========================
 # DEFAULTS
