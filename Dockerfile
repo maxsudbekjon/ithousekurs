@@ -41,6 +41,6 @@ COPY --from=builder /opt/venv /opt/venv
 # Copy project
 COPY . .
 
-
-CMD python manage.py collectstatic --noinput && \
-    gunicorn config.wsgi:application --bind 0.0.0.0:8000
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+ENTRYPOINT ["bash", "/app/entrypoint.sh"]
