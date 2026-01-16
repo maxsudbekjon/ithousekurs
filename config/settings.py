@@ -18,6 +18,10 @@ ALLOWED_HOSTS = os.getenv(
     "DJANGO_ALLOWED_HOSTS",
     ""
 ).split(",")
+
+print(f"\n{ALLOWED_HOSTS = }\n")
+print(f"\n{DEBUG = }\n")
+
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN') 
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 # =========================
