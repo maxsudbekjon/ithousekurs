@@ -4,7 +4,7 @@ set -e
 export $(grep -v '^#' .env | xargs)
 
 echo "waiting PostgreSQL..."
-  while ! nc -z db DB_PORT; do
+  while ! nc -z db $DB_PORT; do
   sleep 0.5
 done
 echo "PostgreSQL is working"
