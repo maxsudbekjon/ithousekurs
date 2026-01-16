@@ -4,7 +4,7 @@ services:
     image: postgres:15
     container_name: ithousecourse_db
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ithousecourse_postgres_data:/var/lib/postgresql/data
     env_file:
       - .env
     environment:
@@ -31,6 +31,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: ithousecourse_web
+    restart: unless-stopped
     env_file:
       - ./.env
     environment:
@@ -42,8 +43,12 @@ services:
       - media:/app/media
     ports:
       - "${PORT}:${PORT}"
-    restart: unless-stopped
+
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
+  ithousecourse_postgres_data:
   static:
   media:
