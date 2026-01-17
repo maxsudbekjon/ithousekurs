@@ -40,7 +40,7 @@ services:
     volumes:
       - ./:/app
       - static:/app/staticfiles
-      - media:/app/media
+      - ./media:/app/media
     ports:
       - "${PORT}:${PORT}"
 

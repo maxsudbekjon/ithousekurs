@@ -28,9 +28,24 @@ class TeacherSerializer(ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
     class Meta:
         model = Teacher
-        fields = ["id",'first_name', 'last_name', 'email', 'phone_number', 'profile_picture', 'role', 'password', 'confirm_password', 'specialization', 'bio', 'students', 'experience']
+        fields = [
+            "id",
+            'first_name',
+            'last_name',
+            'email',
+            'phone_number',
+            'profile_picture',
+            'role',
+            'password',
+            'confirm_password',
+            'specialization',
+            'bio',
+            'students',
+            'experience'
+        ]
 
 
 class RegisterStep1Serializer(ModelSerializer):
@@ -55,12 +70,12 @@ class RegisterStep1Serializer(ModelSerializer):
         if CustomUser.objects.filter(phone_number=value).exists():
             raise serializers.ValidationError("Bu telefon raqam orqali allaqachon tizimga ro'yhatdan o'tilgan")
         return value
-    
+
     def validate(self, attrs):
         if attrs["password"] != attrs["confirm_password"]:
             raise serializers.ValidationError({"confirm_password": "Parollar mos kelmadi."})
         return attrs
-    
+
 
 class SMSCodeSerializer(serializers.Serializer):
     phone_number = serializers.RegexField(
@@ -71,7 +86,7 @@ class SMSCodeSerializer(serializers.Serializer):
             "invalid": "Telefon raqami +998 bilan boshlanishi va jami 13 ta belgidan iborat bo‘lishi kerak."
         }
     )
-    
+
 
 class VerifySMSSerializer(serializers.Serializer):
     phone_number = serializers.RegexField(
@@ -89,10 +104,11 @@ class CustomUserSerializer(ModelSerializer):
     class Meta:
         model = CustomUser
         fields = '__all__'
-        
+
 
 class RoleSerializer(ModelSerializer):
     name = serializers.SerializerMethodField()
+
     class Meta:
         model = Role
         fields = '__all__'
@@ -105,9 +121,11 @@ class RoleSerializer(ModelSerializer):
             return obj.name_en
         return obj.name_uz
 
+
 class NotificationSerializer(ModelSerializer):
     title = serializers.SerializerMethodField()
     message = serializers.SerializerMethodField()
+
     class Meta:
         model = Notification
         fields = '__all__'
@@ -119,7 +137,7 @@ class NotificationSerializer(ModelSerializer):
         elif lang == 'en':
             return obj.title_en
         return obj.title_uz
-    
+
     def get_message(self, obj):
         lang = self.context['request'].LANGUAGE_CODE
         if lang == 'ru':
@@ -133,7 +151,7 @@ class ActivityLogSerializer(ModelSerializer):
     class Meta:
         model = ActivityLog
         fields = '__all__'
-        
+
 
 class UserProfileSerializer(ModelSerializer):
     class Meta:
@@ -143,13 +161,13 @@ class UserProfileSerializer(ModelSerializer):
             'id': {'read_only': True},
             'role': {'read_only': True},
         }
-    
+
     def update(self, instance, validated_data):
         phone_number = validated_data.get('phone_number', instance.phone_number)
-        
+
         if phone_number != instance.phone_number:
             instance.is_verified = False
-        
+
         return super().update(instance, validated_data)
 
 
@@ -469,6 +487,7 @@ class ProfileDashboardSerializer(serializers.Serializer):
                 "best": streak["best"],
             },
         }
+
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:

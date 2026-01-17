@@ -13,6 +13,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from accounts.permissions import IsTeacher
 from accounts.utils import generate_verification_code
+
 from django.core.cache import cache
 from django.contrib.auth.hashers import make_password
 from drf_yasg.utils import swagger_auto_schema
