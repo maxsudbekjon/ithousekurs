@@ -6,7 +6,7 @@ from rest_framework.routers import DefaultRouter
 from django.urls import path
 from accounts.views import (UserProfileUpdateView, UserRegisterView, RoleViewSet, TeacherViewSet, UserProfileView,
                             VerifySMSAPIView, GetSMSCodeView, CookieTokenObtainPairView,
-                            UserProfileDashboardView
+                            UserProfileDashboardView, LoginSMSCodeView
 )
 
 
@@ -18,6 +18,7 @@ urlpatterns = [
     path('token/', CookieTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('register/', UserRegisterView.as_view(), name='user_register'),
+    path('login-sms/', LoginSMSCodeView.as_view(), name='login_sms'),
     path('verify-sms/', VerifySMSAPIView.as_view()),
     path('code/', GetSMSCodeView.as_view(), name='get_sms_code'),
     path('profile/', UserProfileView.as_view(), name='user_profile'),
