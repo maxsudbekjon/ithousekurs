@@ -53,7 +53,7 @@ def _get_eskiz_token():
 
 
 def _format_message(code):
-    template = os.getenv("ESKIZ_TEMPLATE", "Tasdiqlash kodi: {code}")
+    template = "ithouseonline.uz saytiga ro'yxatdan o'tish uchun tasdiqlash kodi: {code}"
     try:
         return template.format(code=code)
     except (KeyError, IndexError, ValueError) as exc:
