@@ -6,13 +6,15 @@ from rest_framework import generics, views
 from accounts.serializers import (CustomUserSerializer, ProfileUpdateSerializer,
                                   RoleSerializer, TeacherSerializer,
                                   RegisterStep1Serializer, VerifySMSSerializer,
-                                  UserProfileSerializer, ProfileDashboardSerializer
+                                  UserProfileSerializer, ProfileDashboardSerializer,
+                                  SMSCodeSerializer
                                   )
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from accounts.permissions import IsTeacher
 from accounts.utils import generate_verification_code
+from accounts.sms import send_verification_sms, SmsSendError
 from django.core.cache import cache
 from django.contrib.auth.hashers import make_password
 from drf_yasg.utils import swagger_auto_schema
@@ -36,11 +38,15 @@ class UserRegisterView(views.APIView):
         verification_code = generate_verification_code()
 
         cache_data = {
+            "purpose": "register",
             "user_data": serializer.validated_data,
             "code": verification_code
         }
 
-        print(f"Send sms to {serializer.validated_data['phone_number']} code: {verification_code}")
+        try:
+            send_verification_sms(serializer.validated_data["phone_number"], verification_code)
+        except SmsSendError:
+            return Response({"detail": "SMS yuborishda xatolik yuz berdi"}, status=status.HTTP_502_BAD_GATEWAY)
         cache.set(f"verify:{serializer.validated_data['phone_number']}", cache_data, timeout=600)
 
         return Response({"message": "Tasdiqlash uchun sms kod yuborildi"}, status=status.HTTP_200_OK)
@@ -89,18 +95,27 @@ class VerifySMSAPIView(views.APIView):
         if not cached_data:
             return Response({"detail": "Kod topilmadi yoki muddati o'tib ketgan"}, status=status.HTTP_400_BAD_REQUEST)
 
-        user_data = cached_data["user_data"]
-        code = cached_data["code"]
+        code = cached_data.get("code")
 
         if code != verification_code:
             return Response({"detail": "Kod notogri"}, status=status.HTTP_400_BAD_REQUEST)
 
-        user = CustomUser.objects.create(
-            phone_number=user_data["phone_number"],
-            first_name=user_data["first_name"],
-            last_name=user_data["last_name"],
-            password=make_password(user_data["password"]),
-        )
+        purpose = cached_data.get("purpose", "register")
+        if purpose == "login":
+            user_id = cached_data.get("user_id")
+            user = CustomUser.objects.filter(id=user_id).first()
+            if not user:
+                return Response({"detail": "Foydalanuvchi topilmadi"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            user_data = cached_data.get("user_data")
+            if not user_data:
+                return Response({"detail": "Ro'yxatdan o'tish ma'lumotlari topilmadi"}, status=status.HTTP_400_BAD_REQUEST)
+            user = CustomUser.objects.create(
+                phone_number=user_data["phone_number"],
+                first_name=user_data["first_name"],
+                last_name=user_data["last_name"],
+                password=make_password(user_data["password"]),
+            )
 
         cache.delete(f"verify:{phone_number}")
         refresh = RefreshToken.for_user(user)
@@ -113,6 +128,35 @@ class VerifySMSAPIView(views.APIView):
             }
         }, status=status.HTTP_200_OK)
 
+class LoginSMSCodeView(views.APIView):
+    permission_classes = [permissions.AllowAny]
+
+    @swagger_auto_schema(
+        request_body=SMSCodeSerializer,
+        responses={200: SMSCodeSerializer},
+    )
+    def post(self, request):
+        serializer = SMSCodeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        phone_number = serializer.validated_data["phone_number"]
+
+        user = CustomUser.objects.filter(phone_number=phone_number).first()
+        if not user:
+            return Response({"detail": "Foydalanuvchi topilmadi"}, status=status.HTTP_404_NOT_FOUND)
+
+        verification_code = generate_verification_code()
+        cache_data = {
+            "purpose": "login",
+            "user_id": str(user.id),
+            "code": verification_code,
+        }
+        try:
+            send_verification_sms(phone_number, verification_code)
+        except SmsSendError:
+            return Response({"detail": "SMS yuborishda xatolik yuz berdi"}, status=status.HTTP_502_BAD_GATEWAY)
+        cache.set(f"verify:{phone_number}", cache_data, timeout=600)
+
+        return Response({"message": "Tasdiqlash uchun sms kod yuborildi"}, status=status.HTTP_200_OK)
 
 class ResendSMSCodeView(views.APIView):
     def post(self, request):
@@ -121,9 +165,18 @@ class ResendSMSCodeView(views.APIView):
         if not phone_number:
             return Response({"detail": "Telefon raqam kiritilishi kerak"}, status=status.HTTP_400_BAD_REQUEST)
 
+        cached_data = cache.get(f"verify:{phone_number}")
+        if not cached_data or "purpose" not in cached_data:
+            return Response({"detail": "Kod topilmadi yoki muddati o'tib ketgan"}, status=status.HTTP_400_BAD_REQUEST)
+
         verification_code = generate_verification_code()
-        cache.set(f"verify:{phone_number}", verification_code, timeout=600)
-        print(f"Resend SMS code to {phone_number} code: {verification_code}")
+        cached_data["code"] = verification_code
+        try:
+            send_verification_sms(phone_number, verification_code)
+        except SmsSendError:
+            return Response({"detail": "SMS yuborishda xatolik yuz berdi"}, status=status.HTTP_502_BAD_GATEWAY)
+
+        cache.set(f"verify:{phone_number}", cached_data, timeout=600)
 
         return Response({"detail": "SMS kod qayta yuborildi"}, status=status.HTTP_200_OK)
 

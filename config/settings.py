@@ -16,7 +16,7 @@ AUTH_USER_MODEL = "accounts.CustomUser"
 
 ALLOWED_HOSTS = os.getenv(
     "DJANGO_ALLOWED_HOSTS",
-    ""
+    "localhost,127.0.0.1"
 ).split(",")
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN') 
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
@@ -70,7 +70,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = os.getenv(
     "DJANGO_CORS_ALLOWED_ORIGINS",
-    ""
+    "http://localhost:8000,http://127.0.0.1:8000,http://localhost:8014,http://127.0.0.1:8014"
 ).split(",")
 
 CORS_ALLOW_HEADERS = [
@@ -89,7 +89,7 @@ CORS_ALLOW_HEADERS = [
 # =========================
 CSRF_TRUSTED_ORIGINS = os.getenv(
     "DJANGO_CSRF_TRUSTED_ORIGINS",
-    ""
+    "http://localhost:8000,http://127.0.0.1:8000,http://localhost:8014,http://127.0.0.1:8014"
 ).split(",")
 
 USE_X_FORWARDED_HOST = True
@@ -181,7 +181,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # =========================
 SWAGGER_SETTINGS = {
     "USE_SESSION_AUTH": False,
-    "DEFAULT_API_URL": "https://reggaes.ithouseonline.uz",
+    "DEFAULT_API_URL": os.getenv("DOMAIN_URL", "http://localhost:8014"),
     "SECURITY_DEFINITIONS": {
         "Bearer": {
             "type": "apiKey",
